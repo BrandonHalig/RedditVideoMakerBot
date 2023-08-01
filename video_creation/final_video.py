@@ -42,12 +42,16 @@ class ProgressFfmpeg(threading.Thread):
 
     def get_latest_ms_progress(self):
         lines = self.output_file.readlines()
-
+    
         if lines:
             for line in lines:
                 if "out_time_ms" in line:
-                    out_time_ms = line.split("=")[1]
-                    return int(out_time_ms) / 1000000.0
+                    out_time_ms_str = line.split("=")[1].strip()
+                    if out_time_ms_str.isnumeric():
+                        return float(out_time_ms_str) / 1000000.0
+                    else:
+                        # Handle the case when "N/A" is encountered
+                        return None
         return None
 
     def stop(self):
